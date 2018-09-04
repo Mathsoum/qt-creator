@@ -44,26 +44,31 @@ public:
     OutlineWidgetStack(OutlineFactory *factory);
     ~OutlineWidgetStack() override;
 
+    QToolButton *toggleAlphaSortButton();  //FIXME Why accessors are not const ?
     QToolButton *toggleSyncButton();
     QToolButton *filterButton();
 
     void saveSettings(QSettings *settings, int position);
     void restoreSettings(QSettings *settings, int position);
 
+
 private:
     bool isCursorSynchronized() const;
     QWidget *dummyWidget() const;
     void updateFilterMenu();
+    void toggleAlphaSorting();
     void toggleCursorSynchronization();
     void updateCurrentEditor(Core::IEditor *editor);
 
     QStackedWidget *m_widgetStack;
     OutlineFactory *m_factory;
+    QToolButton *m_toggleAlphaSort;
     QToolButton *m_toggleSync;
     QToolButton *m_filterButton;
     QMenu *m_filterMenu;
     QVariantMap m_widgetSettings;
     bool m_syncWithEditor;
+    bool m_alphaSorting;
 };
 
 class OutlineFactory : public Core::INavigationWidgetFactory

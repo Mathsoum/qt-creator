@@ -75,6 +75,14 @@ OutlineWidgetStack::OutlineWidgetStack(OutlineFactory *factory) :
     connect(m_toggleSync, &QAbstractButton::clicked,
             this, &OutlineWidgetStack::toggleCursorSynchronization);
 
+    m_toggleAlphaSort = new QToolButton;
+    m_toggleAlphaSort->setIcon(Utils::Icons::LINK_TOOLBAR.icon());  //FIXME change the icon
+    m_toggleAlphaSort->setCheckable(true);
+    m_toggleAlphaSort->setChecked(true);
+    m_toggleAlphaSort->setToolTip(tr("Sort entries alphabetically"));
+    connect(m_toggleAlphaSort, &QAbstractButton::clicked,
+            this, &OutlineWidgetStack::toggleAlphaSorting);
+
     m_filterButton = new QToolButton(this);
     // The ToolButton needs a parent because updateFilterMenu() sets
     // it visible. That would open a top-level window if the button
@@ -106,9 +114,15 @@ QToolButton *OutlineWidgetStack::filterButton()
     return m_filterButton;
 }
 
+QToolButton *OutlineWidgetStack::toggleAlphaSortButton()
+{
+    return m_toggleAlphaSort;
+}
+
 void OutlineWidgetStack::saveSettings(QSettings *settings, int position)
 {
     const QString baseKey = QStringLiteral("Outline.%1.").arg(position);
+    settings->setValue(baseKey + QLatin1String("AlphaSorting"), toggleAlphaSortButton()->isChecked());
     settings->setValue(baseKey + QLatin1String("SyncWithEditor"), toggleSyncButton()->isChecked());
     for (auto iter = m_widgetSettings.constBegin(); iter != m_widgetSettings.constEnd(); ++iter)
         settings->setValue(baseKey + iter.key(), iter.value());
@@ -119,6 +133,7 @@ void OutlineWidgetStack::restoreSettings(QSettings *settings, int position)
     const QString baseKey = QStringLiteral("Outline.%1.").arg(position);
 
     bool syncWithEditor = true;
+    bool alphaSorting = true;
     m_widgetSettings.clear();
     foreach (const QString &longKey, settings->allKeys()) {
         if (!longKey.startsWith(baseKey))
@@ -129,11 +144,15 @@ void OutlineWidgetStack::restoreSettings(QSettings *settings, int position)
         if (key == QLatin1String("SyncWithEditor")) {
             syncWithEditor = settings->value(longKey).toBool();
             continue;
+        } else if (key == QLatin1String("AlphaSorting")) {
+            alphaSorting = settings->value(longKey).toBool();
+            continue;
         }
         m_widgetSettings.insert(key, settings->value(longKey));
     }
 
     toggleSyncButton()->setChecked(syncWithEditor);
+    toggleAlphaSortButton()->setChecked(alphaSorting);
     if (IOutlineWidget *outlineWidget = qobject_cast<IOutlineWidget*>(currentWidget()))
         outlineWidget->restoreSettings(m_widgetSettings);
 }
@@ -141,6 +160,13 @@ void OutlineWidgetStack::restoreSettings(QSettings *settings, int position)
 bool OutlineWidgetStack::isCursorSynchronized() const
 {
     return m_syncWithEditor;
+}
+
+void OutlineWidgetStack::toggleAlphaSorting()
+{
+    m_alphaSorting = !m_alphaSorting;
+    if (IOutlineWidget *outlineWidget = qobject_cast<IOutlineWidget*>(currentWidget()))
+        outlineWidget->setAlphaSorting(m_alphaSorting);
 }
 
 void OutlineWidgetStack::toggleCursorSynchronization()
