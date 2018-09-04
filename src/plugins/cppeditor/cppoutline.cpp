@@ -136,6 +136,13 @@ void CppOutlineWidget::setCursorSynchronization(bool syncWithCursor)
         updateSelectionInTree(m_editor->outline()->modelIndex());
 }
 
+void CppOutlineWidget::setAlphaSorting(bool alphaSorting)
+{
+    if (alphaSorting)
+        //TODO Tell the view to sort the tree
+        return;
+}
+
 void CppOutlineWidget::modelUpdated()
 {
     m_treeView->expandAll();

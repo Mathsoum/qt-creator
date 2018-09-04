@@ -69,6 +69,7 @@ public:
     // IOutlineWidget
     QList<QAction*> filterMenuActions() const override;
     void setCursorSynchronization(bool syncWithCursor) override;
+    void setAlphaSorting(bool alphaSorting) override;
 
 private:
     void modelUpdated();

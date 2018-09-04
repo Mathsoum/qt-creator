@@ -41,6 +41,7 @@ public:
 
     virtual QList<QAction*> filterMenuActions() const = 0;
     virtual void setCursorSynchronization(bool syncWithCursor) = 0;
+    virtual void setAlphaSorting(bool alphaSorting) = 0;
 
     virtual void restoreSettings(const QVariantMap & /*map*/) { }
     virtual QVariantMap settings() const { return QVariantMap(); }
